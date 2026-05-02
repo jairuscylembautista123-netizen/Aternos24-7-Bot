@@ -21,7 +21,7 @@ function startBot() {
   try {
     const client = bedrock.createClient({
       host: config.name,
-      port: 19132,
+      port: 23270,
       username: config['bot-account'].username,
       offline: true,
       version: ""

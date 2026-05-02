@@ -1,8 +1,8 @@
 {
   "name": "WorldwidePlusSMP-Bot",
   "server": {
-    "ip": "YOUR_ATERNOS_IP_HERE.aternos.me",
-    "port": 19132
+    "ip": "WorldwidePlusSMP-Bot",
+    "port": 23270
   },
   "bot-account": {
     "username": "ImmortalBot",

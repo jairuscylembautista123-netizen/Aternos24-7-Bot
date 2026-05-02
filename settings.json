@@ -1,7 +1,7 @@
 {
   "name": "WorldwidePlusSMP-Bot",
   "server": {
-    "ip": "WorldwidePlusSMP-Bot",
+    "ip": "WorldwidePlusSMP.aternos.me",
     "port": 23270
   },
   "bot-account": {

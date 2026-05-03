@@ -1,17 +1,17 @@
 {
   "name": "immortal-king-bot",
   "version": "1.0.0",
-  "description": "Pure CommonJS Digital Resurrection 1.26.14.1",
+  "description": "24-7 Bot for 1.26.14.1",
   "main": "index.js",
-  "type": "commonjs", 
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "bedrock-protocol": "1.26.14",
-    "express": "4.18.2"
+    "bedrock-protocol": "latest",
+    "express": "^4.18.2"
   },
   "engines": {
-    "node": "18.x"
+    "node": ">=18.0.0"
   }
 }

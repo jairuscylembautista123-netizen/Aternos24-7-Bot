@@ -9,35 +9,53 @@ const config = {
   host: 'WorldWidePlusSMP.aternos.me', 
   port: 23270,                        
   version: '1.26.14',                
-  password: 'chalo362'               // THE MISSING SIGMA KEY 🧤
+  password: 'chalo362'               
 };
 
-app.get('/', (req, res) => res.send('🤖 Bot is Grinding...'));
-app.listen(PORT, '0.0.0.0', () => console.log(`[Server] Live on ${PORT} 🧤`));
+app.get('/', (req, res) => res.send('🤖 KING IS JUMPING 🗿'));
+app.listen(PORT, '0.0.0.0');
 
 function createBot() {
-  console.log(`[*] BOOTING WITH PASSWORD: ${config.password}... 📟`);
+  console.log(`[*] @a LOCKED IN + JUMPING... 🗿🧤`);
   
   const client = bedrock.createClient({
     host: config.host,
     port: config.port,
     version: config.version,
     offline: true,              
-    connectTimeout: 90000,      // WAIT FOR THE STINKY LAG 🥀
+    skipEncryption: true,       // NO REAL ENCRYPTION 💀
+    connectTimeout: 90000,      
     raknetErrorTimeout: 90000
   });
 
   client.on('join', () => {
-    console.log("[+] SPAWNED! SENDING AUTH... 🧤");
+    console.log("[+] JOINED! STARTING JUMP GRIND... 🗿");
     
-    // THE PASSWORD FIX:
+    // THE INFINITY JUMP FIX:
+    setInterval(() => {
+      if (client.status === 'play') {
+        // Force a jump/move packet so we never go idle
+        client.write('player_auth_input', {
+          pitch: 0, yaw: 0,
+          position: client.startGameData.world_spawn,
+          move_vector: { x: 0, z: 0 },
+          input_data: { jump_down: true, jumping: true },
+          input_mode: 'touch', play_mode: 'normal',
+          tick: BigInt(0)
+        });
+        console.log("[*] JUMP! 🧪");
+      }
+    }, 2000); // Jump every 2s
+
     setTimeout(() => {
       client.chat(`/login ${config.password}`);
-      console.log(`[*] Sent: /login ${config.password} 🧪`);
-    }, 3000); // Wait 3s for the world to load
+    }, 5000); 
   });
 
-  client.on('error', (err) => console.log("[-] ERROR: " + err.message + " 🥀"));
+  client.on('error', (err) => {
+    if (err.message.includes('timeout')) setTimeout(createBot, 10000); 
+  });
+
   client.on('close', () => setTimeout(createBot, 5000));
 }
 

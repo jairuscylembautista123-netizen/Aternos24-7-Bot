@@ -1,19 +1,83 @@
-Copyright (c) 2026 [YOUR NAME]
+'use strict';
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+const bedrock = require('bedrock-protocol');
+const express = require('express');
+const axios = require('axios'); // ADD THIS TO PACKAGE.JSON! 🧪
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+// THE CONFIG - LOCKED IN 🧤
+const config = {
+  host: 'WorldWidePlusSMP.aternos.me', 
+  port: 23270,                        
+  version: '1.26.14',                
+  password: 'chalo362',
+  url: 'https://your-app-name.onrender.com' // CHANGE TO YOUR RENDER URL! 🚨
+};
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+// THE WEB SERVER TO TRICK THE HOST 🤫
+app.get('/', (req, res) => {
+  res.send('<h1>🤖 IMMORTAL KING IS AWAKE 🤖</h1>');
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[+] WEB DASHBOARD LIVE ON PORT ${PORT} 🧤`);
+});
+
+// THE "MR. JUICE" SELF-PING LOGIC 🧪
+setInterval(async () => {
+  try {
+    await axios.get(config.url);
+    console.log("[*] SELF-PING SUCCESS: STAYING AWAKE... 🛡️");
+  } catch (err) {
+    console.log("[-] SELF-PING FAILED: " + err.message + " 🥀");
+  }
+}, 300000); // Every 5 minutes
+
+function createBot() {
+  console.log(`[*] @a CONNECTING TO ${config.host}... 🧪`);
+  
+  const client = bedrock.createClient({
+    host: config.host,
+    port: config.port,
+    version: config.version,
+    offline: true,              
+    skipEncryption: true,       
+    connectTimeout: 90000
+  });
+
+  client.on('join', () => {
+    console.log("[+] JOINED! WAITING 10S TO AVOID VOID... 🧤");
+    
+    setTimeout(() => {
+      console.log("[*] LOGGING IN... 🛡️");
+      client.chat(`/login ${config.password}`);
+      
+      setInterval(() => {
+        if (client.status === 'play') {
+          client.write('player_auth_input', {
+            pitch: 0, yaw: 0,
+            position: { x: 0, y: 100, z: 0 },
+            move_vector: { x: 0, z: 0 },
+            input_data: { jump_down: true, jumping: true },
+            input_mode: 'touch', play_mode: 'normal',
+            tick: BigInt(0)
+          });
+          console.log("[*] SIGMA JUMP! 🧪");
+        }
+      }, 5000); 
+    }, 10000); 
+  });
+
+  client.on('error', (err) => {
+    console.log("[-] ERROR: " + err.message + " 🥀");
+    setTimeout(createBot, 15000); 
+  });
+
+  client.on('close', () => {
+    console.log("[-] CONNECTION LOST... RE-LOCKING IN... 🧤");
+    setTimeout(createBot, 5000);
+  });
+}
+
+createBot();

@@ -19,7 +19,7 @@ function startBot() {
       port: 23270,
       username: config['bot-account'].username,
       offline: true,
-      version: "" // BLANK FOR GIGACHAD AUTO-DETECT
+      version: "26.14"
     });
 
     client.on('spawn', () => {

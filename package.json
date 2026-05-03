@@ -1,17 +1,16 @@
 {
   "name": "immortal-king-bot",
   "version": "1.0.0",
+  "description": "Digital Resurrection for 1.26.14.1",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-  "bedrock-protocol": "latest",
-  "minecraft-data": "latest",
-  "axios": "latest",
-  "express": "latest"
+    "bedrock-protocol": "latest",
+    "express": "latest"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
-  "resolutions": {
-  "uuid": "^11.0.0",
-  "glob": "^11.0.0"
-  }
+}

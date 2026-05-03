@@ -1,62 +1,19 @@
-'use strict';
+Copyright (c) 2026 [YOUR NAME]
 
-const bedrock = require('bedrock-protocol');
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 5000;
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-const config = {
-  host: 'WorldWidePlusSMP.aternos.me', 
-  port: 23270,                        
-  version: '1.26.14',                
-  password: 'chalo362'               
-};
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-app.get('/', (req, res) => res.send('🤖 KING IS JUMPING 🗿'));
-app.listen(PORT, '0.0.0.0');
-
-function createBot() {
-  console.log(`[*] @a LOCKED IN + JUMPING... 🗿🧤`);
-  
-  const client = bedrock.createClient({
-    host: config.host,
-    port: config.port,
-    version: config.version,
-    offline: true,              
-    skipEncryption: true,       // NO REAL ENCRYPTION 💀
-    connectTimeout: 90000,      
-    raknetErrorTimeout: 90000
-  });
-
-  client.on('join', () => {
-    console.log("[+] JOINED! STARTING JUMP GRIND... 🗿");
-    
-    // THE INFINITY JUMP FIX:
-    setInterval(() => {
-      if (client.status === 'play') {
-        // Force a jump/move packet so we never go idle
-        client.write('player_auth_input', {
-          pitch: 0, yaw: 0,
-          position: client.startGameData.world_spawn,
-          move_vector: { x: 0, z: 0 },
-          input_data: { jump_down: true, jumping: true },
-          input_mode: 'touch', play_mode: 'normal',
-          tick: BigInt(0)
-        });
-        console.log("[*] JUMP! 🧪");
-      }
-    }, 2000); // Jump every 2s
-
-    setTimeout(() => {
-      client.chat(`/login ${config.password}`);
-    }, 5000); 
-  });
-
-  client.on('error', (err) => {
-    if (err.message.includes('timeout')) setTimeout(createBot, 10000); 
-  });
-
-  client.on('close', () => setTimeout(createBot, 5000));
-}
-
-createBot();
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -10,7 +10,7 @@ const config = {
   name: "Immortal King Bot",
   host: 'WorldWidePlusSMP.aternos.me', 
   port: 23270,                        // YOUR SPECIFIC ATERNOS PORT 🧤
-  version: '1.20.80',                 // Match Aternos EXACTLY
+  version: '1.26.14',                 // Match Aternos EXACTLY
   offline: true                       // FOR CRACKED SERVERS
 };
 

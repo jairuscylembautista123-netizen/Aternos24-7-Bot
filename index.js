@@ -5,85 +5,40 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// --- THE SIGMA CONFIG ---
 const config = {
-  name: "Immortal King Bot",
   host: 'WorldWidePlusSMP.aternos.me', 
-  port: 23270,                        // YOUR SPECIFIC ATERNOS PORT 🧤
-  version: '1.26.14',                 // Match Aternos EXACTLY
-  offline: true                       // FOR CRACKED SERVERS
+  port: 23270,                        
+  version: '1.26.14',                
+  password: 'chalo362'               // THE MISSING SIGMA KEY 🧤
 };
 
-// ============================================================
-// EXPRESS SERVER - Keep Render Alive
-// ============================================================
-app.get('/', (req, res) => {
-  res.send(`<h1>🤖 ${config.name} Dashboard</h1><p>Status: Online on Port ${config.port}</p>`);
-});
+app.get('/', (req, res) => res.send('🤖 Bot is Grinding...'));
+app.listen(PORT, '0.0.0.0', () => console.log(`[Server] Live on ${PORT} 🧤`));
 
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'connected', 
-    uptime: Math.floor(process.uptime()),
-    memory: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2) + ' MB'
-  });
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[Server] Dashboard started on port ${PORT} 🧤`);
-});
-
-// ============================================================
-// BEDROCK BOT LOGIC - NO MINEFLAYER
-// ============================================================
 function createBot() {
-  console.log(`[*] BOOTING THE IMMORTAL KING ON BEDROCK... 📟`);
+  console.log(`[*] BOOTING WITH PASSWORD: ${config.password}... 📟`);
   
   const client = bedrock.createClient({
     host: config.host,
     port: config.port,
     version: config.version,
-    offline: config.offline,
-    connectTimeout: 60000 // FIX FOR PING TIMEOUT 🥀
+    offline: true,              
+    connectTimeout: 90000,      // WAIT FOR THE STINKY LAG 🥀
+    raknetErrorTimeout: 90000
   });
 
   client.on('join', () => {
-    console.log("[+] THE IMMORTAL KING HAS SPAWNED! 🧤");
+    console.log("[+] SPAWNED! SENDING AUTH... 🧤");
     
-    // Anti-AFK Heartbeat
-    setInterval(() => {
-      if (client.status === 'play') {
-        client.write('animate', { action_id: 1 }); // Swing arm
-        console.log("[*] Heartbeat: Still Grinding... 🧪");
-      }
-    }, 30000);
+    // THE PASSWORD FIX:
+    setTimeout(() => {
+      client.chat(`/login ${config.password}`);
+      console.log(`[*] Sent: /login ${config.password} 🧪`);
+    }, 3000); // Wait 3s for the world to load
   });
 
-  client.on('error', (err) => {
-    console.log("[-] STINKY ERROR: " + err.message + " 🥀");
-  });
-
-  client.on('close', () => {
-    console.log("[!] CONNECTION LOST... REANIMATING! 🚨");
-    setTimeout(createBot, 5000); // Simple reconnect
-  });
+  client.on('error', (err) => console.log("[-] ERROR: " + err.message + " 🥀"));
+  client.on('close', () => setTimeout(createBot, 5000));
 }
 
-// ============================================================
-// CRASH RECOVERY - IMMORTAL MODE
-// ============================================================
-process.on('uncaughtException', (err) => {
-  const msg = err.message || 'Unknown';
-  console.log(`[FATAL] Exception: ${msg} 🥀`);
-
-  const isNetworkError = msg.includes('timeout') || msg.includes('ECONN') || msg.includes('RakNet');
-  
-  // THE TIMEOUT RECOVERY FIX WE DISCUSSED[cite: 1]
-  setTimeout(() => {
-    console.log("[*] RE-BOOTING PROTOCOL AFTER CRASH... 🧤");
-    createBot(); 
-  }, isNetworkError ? 5000 : 10000);
-});
-
-// START THE GRIND
 createBot();

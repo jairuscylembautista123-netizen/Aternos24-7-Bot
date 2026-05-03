@@ -5,7 +5,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// THE CONFIG - NO MORE "LIER" DEPLOYS 🧤
+// THE CONFIG - CORRECTED SEPARATORS 🧤
 const config = {
   host: 'WorldWidePlusSMP.aternos.me', 
   port: 23270,                      
@@ -14,7 +14,7 @@ const config = {
 };
 
 app.get('/', (req, res) => {
-  res.send('<h1>🤖 RENDER CLOUD: DIGITAL RESURRECTION ACTIVE 🧤</h1>');
+  res.send('<h1>🤖 RENDER CLOUD: PARSE ERROR FIXED 🧤</h1>');
 });
 
 app.listen(PORT, '0.0.0.0', () => {
@@ -28,11 +28,11 @@ function createBot() {
     version: config.version,
     offline: true,              
     skipEncryption: true,       
-    connectTimeout: 90000 // GIVING IT MORE TIME FOR THE 11-YEAR-OLD BOSS
+    connectTimeout: 90000 // GIVING IT TIME TO LOAD
   });
 
   client.on('join', () => {
-    console.log("[+] BOT IS LIVE! NO MORE FAILURES! 🧤");
+    console.log("[+] JOINED! NO MORE PARSE ERRORS! 🧤");
     setTimeout(() => {
       client.chat(`/login ${config.password}`);
       
@@ -43,12 +43,12 @@ function createBot() {
           input_data: { jump_down: true, jumping: true },
           input_mode: 'touch', play_mode: 'normal', tick: BigInt(0)
         });
-      }, 5000); 
+      }, 5000);
     }, 10000); 
   });
 
   client.on('error', (err) => {
-    console.log("[-] RENDER ERROR BLOCKED: " + err.message + " 🥀");
+    console.log("[-] ERROR BLOCKED: " + err.message + " 🥀");
     setTimeout(createBot, 15000); 
   });
 }

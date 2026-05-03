@@ -1,11 +1,9 @@
 {
-  "name": "WorldwidePlusSMP-Bot",
+  "name": "WorldWidePlusSMP.aternos.me",
   "server": {
-    "ip": "WorldwidePlusSMP.aternos.me",
     "port": 23270
   },
   "bot-account": {
-    "username": "ImmortalBot",
-    "type": "offline"
+    "username": "ImmortalBot"
   }
-    }
+}

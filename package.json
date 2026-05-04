@@ -1,5 +1,5 @@
 {
-  "name": "xiality-aternos-final",
+  "name": "xiality-aternos-stable",
   "version": "1.0.0",
   "scripts": {
     "start": "node index.js"

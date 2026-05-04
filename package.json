@@ -1,17 +1,13 @@
 {
-  "name": "immortal-king-bot",
+  "name": "xiality-aternos-bot",
   "version": "1.0.0",
-  "description": "24-7 Bot for 1.26.14.1",
+  "description": "24/7 Aternos Sigma Bot",
   "main": "index.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "bedrock-protocol": "latest",
+    "aternos-api": "^1.2.5",
     "express": "^4.18.2"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }

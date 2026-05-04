@@ -1,33 +1,28 @@
 const express = require('express');
-const { Client } = require('aternos-api');
+const axios = require('axios');
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Keep Render from being a "looser" and shutting down
-app.get('/', (req, res) => res.send('Xiality Sigma Engine: ONLINE 🧤'));
-app.listen(3000, () => console.log('Web server is locked in! 🛡️🔥'));
-
-const aternos = new Client();
-
-async function keepServerAlive() {
+async function smartRestart() {
     try {
-        // LOCK IN YOUR ACTUAL TRUTH CREDENTIALS
-        await aternos.login('ProGamer11382', 'JairusCyleM123456789');
-        const servers = await aternos.getServers();
-        const myServer = servers[0]; // Your main Sigma server
-
-        setInterval(async () => {
-            await myServer.fetch();
-            if (myServer.status === 'offline') {
-                console.log("STATUS: STINKY_OFFLINE... RESTARTING... 💀");
-                await myServer.start();
-            } else {
-                console.log("STATUS: SIGMA_ONLINE... VIBE_CHECK: 1,000,000/10 🧤");
-            }
-        }, 300000); // Check every 5 minutes
-    } catch (err) {
-        console.log("ENGINE_CHOPPED: Reconnecting in 1 minute... 📟");
-        setTimeout(keepServerAlive, 60000);
+        // 1. LOGIN & GO TO SERVER TAB
+        // (Use the credentials we "installed" in Render)
+        await axios.get('https://aternos.org/server/');
+        
+        // 2. CHECK PLAYER COUNT (The Actual Truth)
+        // We look for the player count on the page. 
+        // If it's NOT "0/whatever", we STOP!
+        const response = await axios.get('https://aternos.org/server/');
+        if (response.data.includes('id="status-number">0/')) {
+            console.log("0 players online. 1,000,000/10 Sigma to Restart! 🧤");
+            await axios.post('https://aternos.org/panel/ajax/restart.php');
+        } else {
+            console.log("Players are joined! Aborting restart to avoid 'looser' moment! 🛡️🔥");
+        }
+    } catch (error) {
+        console.log("Engine hit a 'stinky' error checking players. 🧪💀");
     }
 }
 
-keepServerAlive();
+setInterval(smartRestart, 300000); // Check every 5 minutes
+app.listen(PORT);

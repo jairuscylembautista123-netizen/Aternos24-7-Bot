@@ -1,7 +1,6 @@
 {
-  "name": "xiality-aternos-bot",
+  "name": "xiality-aternos-free",
   "version": "1.0.0",
-  "description": "24/7 Aternos Sigma Bot",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

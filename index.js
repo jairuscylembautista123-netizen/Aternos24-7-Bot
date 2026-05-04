@@ -1,28 +1,40 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-async function smartRestart() {
+// Use the credentials you "installed" in Render
+const credentials = {
+    user: process.env.ATERNOS_USER,
+    password: process.env.ATERNOS_PASSWORD
+};
+
+async function keepXialityAlive() {
     try {
-        // 1. LOGIN & GO TO SERVER TAB
-        // (Use the credentials we "installed" in Render)
-        await axios.get('https://aternos.org/server/');
-        
-        // 2. CHECK PLAYER COUNT (The Actual Truth)
-        // We look for the player count on the page. 
-        // If it's NOT "0/whatever", we STOP!
+        // 1. AXIOS LOGIN
+        await axios.post('https://aternos.org/panel/ajax/login.php', 
+        `user=${credentials.user}&password=${credentials.password}`, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+
+        // 2. DASHBOARD HIT (XialitySMP)
         const response = await axios.get('https://aternos.org/server/');
-        if (response.data.includes('id="status-number">0/')) {
-            console.log("0 players online. 1,000,000/10 Sigma to Restart! 🧤");
-            await axios.post('https://aternos.org/panel/ajax/restart.php');
+        
+        // 3. THE +1 BUTTON DETECTION
+        // If the extend button is there, Axios smashes it!
+        if (response.data.includes('btn-extend') || response.data.includes('extend.php')) {
+            console.log("Timer is low on XialitySMP! Pressing +1 Button! 🧤");
+            await axios.post('https://aternos.org/panel/ajax/extend.php');
+            console.log("Time Extended! 1,000,000/10 SIGMA! 🛡️🔥");
         } else {
-            console.log("Players are joined! Aborting restart to avoid 'looser' moment! 🛡️🔥");
+            console.log("XialitySMP is stable. No 'gugugaga' moves needed. 🧪");
         }
     } catch (error) {
-        console.log("Engine hit a 'stinky' error checking players. 🧪💀");
+        console.log("Axios got 'chopped' by the Aternos garbage. Check your Render logs! 💀");
     }
 }
 
-setInterval(smartRestart, 300000); // Check every 5 minutes
-app.listen(PORT);
+// Check every 30 seconds to catch that +1 button window
+setInterval(keepXialityAlive, 30000);
+
+app.get('/', (req, res) => res.send('XialitySMP 24/7 Engine is ONLINE! 🧤'));
+app.listen(process.env.PORT || 3000);

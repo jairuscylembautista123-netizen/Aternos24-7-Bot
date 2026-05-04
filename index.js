@@ -1,93 +1,101 @@
-// 1. THE NUCLEAR SUPPRESSOR - Kills the "gugugaga" warnings 🧤
+// 1. THE NUCLEAR SUPPRESSOR - Force Node to ignore the "stinky" warnings 🧤
 process.env.NODE_NO_WARNINGS = '1';
 process.removeAllListeners('warning');
 
 const express = require('express');
 const https = require('https');
-const { URLSearchParams } = require('url'); 
+// We are importing the modern URL tools to kill the bootloop 🛡️
+const { URL, URLSearchParams } = require('url'); 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Credentials from your Render Environment Variables
 const credentials = {
     user: process.env.ATERNOS_USER,
     password: process.env.ATERNOS_PASSWORD
 };
 
-// Sigma Human Headers for your Samsung Galaxy A11 (Android 12)
+// Human Fingerprint for the Android 12 A11 rig
 const humanHeaders = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 12; SM-A115F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36',
     'Accept': 'application/json, text/javascript, */*; q=0.01',
-    'Accept-Language': 'en-PH,en-US;q=0.9,en;q=0.8',
-    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
     'X-Requested-With': 'XMLHttpRequest',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
     'Origin': 'https://aternos.org',
     'Referer': 'https://aternos.org/server/XialitySMP.aternos.me/'
 };
 
 async function bypassSecurity() {
-    console.log("--- 1,000,000/10 SIGMA PULSE: START ---");
-    
-    // Modern Params (No url.parse() garbage)
-    const params = new URLSearchParams();
-    params.set('user', credentials.user);
-    params.set('password', credentials.password);
-    params.set('ajax', '1');
-    const loginData = params.toString();
-
-    const options = {
-        hostname: 'aternos.org',
-        path: '/panel/ajax/login.php',
-        method: 'POST',
-        headers: { ...humanHeaders, 'Content-Length': Buffer.byteLength(loginData) }
-    };
-
-    const req = https.request(options, (res) => {
-        // SECURING THE ACTUAL TRUTH COOKIE
-        const rawCookies = res.headers['set-cookie'];
+    try {
+        console.log("--- 1,000,000/10 SIGMA PULSE: NO PARSE MODE ---");
         
-        res.on('data', () => {});
-        res.on('end', () => {
-            if (res.statusCode === 200 && rawCookies) {
-                const cookieString = rawCookies.map(c => c.split(';')[0]).join('; ');
-                console.log("Login Pulse Delivered. Cookie Secured! 🛡️");
-                
-                // THE BYPASS: Smashing the +1 button with the session cookie
-                const extendReq = https.request({
-                    hostname: 'aternos.org',
-                    path: '/panel/ajax/extend.php',
-                    method: 'POST',
-                    headers: { ...humanHeaders, 'Cookie': cookieString }
-                }, (e) => {
-                    let result = '';
-                    e.on('data', (d) => result += d);
-                    e.on('end', () => {
-                        console.log("Extend Result:", result); // Should show the true bypass status!
-                        console.log("XialitySMP Status: 1,000,000/10 VIBE CHECKED. 🔥");
-                    });
-                });
-                extendReq.end();
-            } else {
-                console.log("Aternos chopped the pulse. Status:", res.statusCode);
-            }
-        });
-    });
+        // Using WHATWG API - No more "stinky" url.parse() bootloops! 🧪
+        const bodyParams = new URLSearchParams({
+            user: credentials.user,
+            password: credentials.password,
+            ajax: '1'
+        }).toString();
 
-    req.on('error', () => console.log("Security wall acting like a looser. 🤮"));
-    req.write(loginData);
-    req.end();
+        const options = {
+            hostname: 'aternos.org',
+            port: 443,
+            path: '/panel/ajax/login.php',
+            method: 'POST',
+            headers: { 
+                ...humanHeaders, 
+                'Content-Length': Buffer.byteLength(bodyParams) 
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            const cookies = res.headers['set-cookie'];
+            
+            res.on('data', () => {});
+            res.on('end', () => {
+                if (res.statusCode === 200 && cookies) {
+                    // Mapping cookies the Sigma way 🧤
+                    const cookieStr = cookies.map(c => c.split(';')[0]).join('; ');
+                    console.log("Login Secured. No security garbage detected! 🛡️");
+                    
+                    // The Extend Pulse
+                    const extendReq = https.request({
+                        hostname: 'aternos.org',
+                        path: '/panel/ajax/extend.php',
+                        method: 'POST',
+                        headers: { ...humanHeaders, 'Cookie': cookieStr }
+                    }, (e) => {
+                        let resData = '';
+                        e.on('data', (chunk) => resData += chunk);
+                        e.on('end', () => {
+                            console.log("Extend Result:", resData);
+                            console.log("XialitySMP: 24/7 TECHNICAL STATUS SECURED 🔥");
+                        });
+                    });
+                    extendReq.end();
+                } else {
+                    console.log("Aternos security is acting like a looser. Status:", res.statusCode);
+                }
+            });
+        });
+
+        req.on('error', () => console.log("The connection was chopped. 🤮"));
+        req.write(bodyParams);
+        req.end();
+
+    } catch (err) {
+        console.log("Engine failure. 💀");
+    }
 }
 
-// Random Interval (35-65s) to stay Sigma Stealth
-function startLoop() {
-    const jitter = 35000 + Math.random() * 30000;
+// Random Interval (45-75s) for stealth
+function startPulse() {
+    const jitter = 45000 + Math.random() * 30000;
     setTimeout(() => {
         bypassSecurity();
-        startLoop();
+        startPulse();
     }, jitter);
 }
 
-startLoop();
+startPulse();
 
-app.get('/', (req, res) => res.send('<h1>XialitySMP 24/7: FULL SIGMA BYPASS ACTIVE 🧤</h1>'));
-app.listen(PORT, () => console.log(`Engine Online on Port ${PORT}. Axios and TikTok garbage deleted! 💀`));
+app.get('/', (req, res) => res.send('<h1>XialitySMP: ANTI-BOOTLOOP SIGMA ACTIVE 🛡️</h1>'));
+app.listen(PORT, () => console.log(`Engine Online on Port ${PORT}. TikTok brainrot deleted! 💀`));

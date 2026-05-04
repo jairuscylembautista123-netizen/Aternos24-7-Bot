@@ -11,7 +11,7 @@ const aternos = new Client();
 async function keepServerAlive() {
     try {
         // LOCK IN YOUR ACTUAL TRUTH CREDENTIALS
-        await aternos.login('YOUR_USERNAME', 'YOUR_PASSWORD');
+        await aternos.login('ProGamer11382', 'JairusCyleM123456789');
         const servers = await aternos.getServers();
         const myServer = servers[0]; // Your main Sigma server
 

@@ -1,5 +1,6 @@
 const express = require('express');
-const axios = require('axios'); // We keep this for the GET requests
+const https = require('https');
+const { URL } = require('url');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -8,56 +9,57 @@ const credentials = {
     password: process.env.ATERNOS_PASSWORD
 };
 
-// Sigma Human Headers for your Samsung Galaxy A11 rig
-const humanHeaders = {
+// Sigma Stealth Headers - Rotating these stops the "chopped" vibe
+const getHeaders = () => ({
     'User-Agent': 'Mozilla/5.0 (Linux; Android 12; SM-A115F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36',
     'Referer': 'https://aternos.org/server/XialitySMP.aternos.me',
     'Origin': 'https://aternos.org',
-};
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'X-Requested-With': 'XMLHttpRequest'
+});
 
-async function keepXialityAlive() {
-    try {
-        console.log("--- 1,000,000/10 SIGMA PULSE START ---");
-
-        // 1. MODERN LOGIN (Using URLSearchParams to avoid the "stinky" parser)
-        const params = new URLSearchParams();
-        params.append('user', credentials.user);
-        params.append('password', credentials.password);
-
-        const session = axios.create({
-            baseURL: 'https://aternos.org',
-            headers: humanHeaders
-        });
-
-        // The Actual Truth Login
-        await session.post('/panel/ajax/login.php', params.toString(), {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        });
-
-        // 2. HIT THE XIALITY-SMP DASHBOARD
-        const response = await session.get('/server/XialitySMP.aternos.me');
+async function stealthPulse() {
+    // Sigma Jitter: Randomly wait 30-60 seconds so Aternos doesn't flag the "bot" pattern
+    const jitter = Math.floor(Math.random() * 30000);
+    setTimeout(async () => {
+        console.log("--- 1,000,000/10 STEALTH BYPASS START ---");
         
-        // 3. THE +1 BUTTON SMASH
-        // We check for the 'btn-extend' or the specific AJAX call
-        if (response.data.includes('id="status-number">0/')) {
-            if (response.data.includes('extend.php') || response.data.includes('btn-extend')) {
-                console.log("Timer under 1 min! Smashing +1 button! 🧤🛡️");
-                await session.post('/panel/ajax/extend.php');
-                console.log("Time Extended! XialitySMP is 24/7! 🔥");
-            } else {
-                console.log("Timer is safe. No 'gugugaga' moves needed. 🧪");
-            }
-        } else {
-            console.log("Players are joined! Keeping the world alive. 💀");
-        }
+        const loginData = `user=${encodeURIComponent(credentials.user)}&password=${encodeURIComponent(credentials.password)}`;
+        
+        const options = {
+            hostname: 'aternos.org',
+            path: '/panel/ajax/login.php',
+            method: 'POST',
+            headers: { ...getHeaders(), 'Content-Length': Buffer.byteLength(loginData) }
+        };
 
-    } catch (error) {
-        console.log("Aternos garbage blocked the pulse. Retrying... 🤮");
-    }
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', (d) => body += d);
+            res.on('end', () => {
+                console.log("Stealth Pulse Delivered to XialitySMP! 🧤🛡️");
+                // After login, we hit the extend endpoint directly
+                const extendOptions = {
+                    hostname: 'aternos.org',
+                    path: '/panel/ajax/extend.php',
+                    method: 'POST',
+                    headers: getHeaders()
+                };
+                https.request(extendOptions, (e) => e.on('data', () => {})).end();
+            });
+        });
+
+        req.on('error', () => console.log("Security garbage tried to chop us. 🤮"));
+        req.write(loginData);
+        req.end();
+        
+        // Loop the pulse
+        stealthPulse();
+    }, 30000 + jitter);
 }
 
-// Check every 30 seconds to catch that +1 window
-setInterval(keepXialityAlive, 30000);
+// Start the Sigma Engine
+stealthPulse();
 
-app.get('/', (req, res) => res.send('XialitySMP 24/7 Engine: ZERO-GUGUGAGA MODE 🛡️'));
-app.listen(PORT, () => console.log(`Engine running on ${PORT}. No more security chops! 🧤`));
+app.get('/', (req, res) => res.send('<h1>XialitySMP 24/7: STEALTH BYPASS ACTIVE 🛡️</h1>'));
+app.listen(PORT, () => console.log(`Engine running on ${PORT}. No warnings, pure Sigma. 🧤`));

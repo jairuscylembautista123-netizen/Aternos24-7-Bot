@@ -1,6 +1,4 @@
 const express = require('express');
-const https = require('https');
-const { URL, URLSearchParams } = require('url'); // THE ACTUAL TRUTH API
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -10,7 +8,7 @@ const credentials = {
     password: process.env.ATERNOS_PASSWORD
 };
 
-// Precise Fingerprint for your Android 12 Galaxy A11
+// Human Fingerprint for your Android 12 Samsung A11 rig
 const humanHeaders = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 12; SM-A115F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36',
     'Accept': 'application/json, text/javascript, */*; q=0.01',
@@ -21,62 +19,48 @@ const humanHeaders = {
 };
 
 async function bypassSecurity() {
-    console.log("--- STARTING RAW SIGMA PULSE ---");
+    console.log("--- 🕵️ NATIVE FETCH SIGMA PULSE: START ---");
 
     try {
-        // Using WHATWG URLSearchParams to avoid old 'url' garbage
         const bodyParams = new URLSearchParams({
             user: credentials.user,
             password: credentials.password,
             ajax: '1'
-        }).toString();
-
-        // WE ARE PASSING THE URL OBJECT DIRECTLY - THIS KILLS DEP0169
-        const loginUrl = new URL('https://aternos.org/panel/ajax/login.php');
-
-        const options = {
-            method: 'POST',
-            headers: { 
-                ...humanHeaders, 
-                'Content-Length': Buffer.byteLength(bodyParams) 
-            }
-        };
-
-        const req = https.request(loginUrl, options, (res) => {
-            const rawCookies = res.headers['set-cookie'];
-            
-            res.on('data', () => {}); // Drain stream
-            res.on('end', () => {
-                if (res.statusCode === 200 && rawCookies) {
-                    const cookieStr = rawCookies.map(c => c.split(';')[0]).join('; ');
-                    console.log("✅ Login Pulse Delivered! Status: 200");
-
-                    // The Extend Pulse using the same Modern URL Object logic
-                    const extendUrl = new URL('https://aternos.org/panel/ajax/extend.php');
-                    const extendReq = https.request(extendUrl, {
-                        method: 'POST',
-                        headers: { ...humanHeaders, 'Cookie': cookieStr }
-                    }, (e) => {
-                        let result = '';
-                        e.on('data', (d) => result += d);
-                        e.on('end', () => {
-                            console.log(`Final Extend Result: ${result}`);
-                            console.log("XialitySMP: 24/7 MODE SECURED. 🧤🛡️");
-                        });
-                    });
-                    extendReq.end();
-                } else {
-                    console.log(`❌ Login Chopped. Status: ${res.statusCode}. Check Password!`);
-                }
-            });
         });
 
-        req.on('error', (err) => console.log(`🛑 ENGINE ERROR: ${err.message}`));
-        req.write(bodyParams);
-        req.end();
+        // STEP 1: Login using Global Fetch (No url.parse garbage here!)
+        const loginRes = await fetch('https://aternos.org/panel/ajax/login.php', {
+            method: 'POST',
+            headers: humanHeaders,
+            body: bodyParams
+        });
 
+        // Get the response text to see the ACTUAL TRUTH
+        const loginText = await loginRes.text();
+        const rawCookies = loginRes.headers.get('set-cookie');
+
+        if (loginRes.ok && rawCookies) {
+            // Clean up the cookies so Aternos doesn't act like a looser
+            const cookieStr = rawCookies.split(',').map(c => c.split(';')[0]).join('; ');
+            console.log("✅ Login Pulse Delivered! Unlinked Account Verified.");
+
+            // STEP 2: Extend the server life
+            const extendRes = await fetch('https://aternos.org/panel/ajax/extend.php', {
+                method: 'POST',
+                headers: { 
+                    ...humanHeaders, 
+                    'Cookie': cookieStr 
+                }
+            });
+
+            const result = await extendRes.text();
+            console.log(`Final Extend Result: ${result}`);
+            console.log("XialitySMP: 24/7 TECHNICAL STATUS SECURED 🔥");
+        } else {
+            console.log(`❌ Login Chopped. Status: ${loginRes.status}. Check your Password!`);
+        }
     } catch (err) {
-        console.log("CRITICAL FAILURE: Gugugaga vibes detected.");
+        console.log(`🛑 ENGINE CRASH: ${err.message}. Aternos security is strong.`);
     }
 }
 
@@ -91,5 +75,5 @@ function loop() {
 
 loop();
 
-app.get('/', (req, res) => res.send('XialitySMP: RAW SIGMA ENGINE ACTIVE 🛡️'));
-app.listen(PORT, () => console.log(`Engine Online on Port ${PORT}. TikTok brainrot banned. 💀`));
+app.get('/', (req, res) => res.send('<h1>XialitySMP: FETCH ENGINE 100% NO-WARNING 🛡️</h1>'));
+app.listen(PORT, () => console.log(`Engine Online on Port ${PORT}. TikTok brainrot deleted! 💀`));

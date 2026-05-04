@@ -1,14 +1,16 @@
 const express = require('express');
+const https = require('https');
+const { URL, URLSearchParams } = require('url'); 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Your NEW unlinked credentials from Render Env
+// Your NEW unlinked credentials (Direct Password Mode)
 const credentials = {
     user: process.env.ATERNOS_USER,
     password: process.env.ATERNOS_PASSWORD
 };
 
-// Human Fingerprint for your Android 12 Samsung A11 rig
+// Human Fingerprint for the Galaxy A11 (Android 12) rig in Tayug
 const humanHeaders = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 12; SM-A115F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36',
     'Accept': 'application/json, text/javascript, */*; q=0.01',
@@ -19,52 +21,66 @@ const humanHeaders = {
 };
 
 async function bypassSecurity() {
-    console.log("--- 🕵️ NATIVE FETCH SIGMA PULSE: START ---");
+    console.log("--- 🕵️ ACTUAL TRUTH: PURE WRITE MODE ---");
 
     try {
         const bodyParams = new URLSearchParams({
             user: credentials.user,
             password: credentials.password,
             ajax: '1'
-        });
+        }).toString();
 
-        // STEP 1: Login using Global Fetch (No url.parse garbage here!)
-        const loginRes = await fetch('https://aternos.org/panel/ajax/login.php', {
-            method: 'POST',
-            headers: humanHeaders,
-            body: bodyParams
-        });
+        const loginUrl = new URL('https://aternos.org/panel/ajax/login.php');
 
-        // Get the response text to see the ACTUAL TRUTH
-        const loginText = await loginRes.text();
-        const rawCookies = loginRes.headers.get('set-cookie');
+        // THE FIX: METHOD IS NOW 'WRITE' TO FORCE THE MANUAL STREAM 🛡️
+        const options = {
+            method: 'WRITE', 
+            headers: { 
+                ...humanHeaders, 
+                'Content-Length': Buffer.byteLength(bodyParams) 
+            }
+        };
 
-        if (loginRes.ok && rawCookies) {
-            // Clean up the cookies so Aternos doesn't act like a looser
-            const cookieStr = rawCookies.split(',').map(c => c.split(';')[0]).join('; ');
-            console.log("✅ Login Pulse Delivered! Unlinked Account Verified.");
+        const req = https.request(loginUrl, options, (res) => {
+            const rawCookies = res.headers['set-cookie'];
+            
+            res.on('data', () => {}); 
+            res.on('end', () => {
+                if (res.statusCode === 200 && rawCookies) {
+                    const cookieStr = rawCookies.map(c => c.split(';')[0]).join('; ');
+                    console.log("✅ Pulse Written! Sending Extend Pulse...");
 
-            // STEP 2: Extend the server life
-            const extendRes = await fetch('https://aternos.org/panel/ajax/extend.php', {
-                method: 'POST',
-                headers: { 
-                    ...humanHeaders, 
-                    'Cookie': cookieStr 
+                    const extendUrl = new URL('https://aternos.org/panel/ajax/extend.php');
+                    const extendReq = https.request(extendUrl, {
+                        method: 'WRITE', // NO POST HERE EITHER 🧤
+                        headers: { ...humanHeaders, 'Cookie': cookieStr }
+                    }, (e) => {
+                        let result = '';
+                        e.on('data', (d) => result += d);
+                        e.on('end', () => {
+                            console.log(`Final Extend Result: ${result}`);
+                            console.log("XialitySMP: 24/7 MODE SECURED 🔥");
+                        });
+                    });
+                    extendReq.end();
+                } else {
+                    console.log(`❌ Login Chopped. Status: ${res.statusCode}.`);
                 }
             });
+        });
 
-            const result = await extendRes.text();
-            console.log(`Final Extend Result: ${result}`);
-            console.log("XialitySMP: 24/7 TECHNICAL STATUS SECURED 🔥");
-        } else {
-            console.log(`❌ Login Chopped. Status: ${loginRes.status}. Check your Password!`);
-        }
+        req.on('error', (err) => console.log(`🛑 ENGINE ERROR: ${err.message}`));
+        
+        // --- MANUAL DATA DELIVERY ---
+        req.write(bodyParams); 
+        req.end(); 
+        // ----------------------------
+
     } catch (err) {
-        console.log(`🛑 ENGINE CRASH: ${err.message}. Aternos security is strong.`);
+        console.log("CRITICAL FAILURE: Engine acting like a total looser. 🤮");
     }
 }
 
-// 45-75s Random Interval for Tayug Stealth
 function loop() {
     const jitter = 45000 + Math.random() * 30000;
     setTimeout(() => {
@@ -75,5 +91,5 @@ function loop() {
 
 loop();
 
-app.get('/', (req, res) => res.send('<h1>XialitySMP: FETCH ENGINE 100% NO-WARNING 🛡️</h1>'));
-app.listen(PORT, () => console.log(`Engine Online on Port ${PORT}. TikTok brainrot deleted! 💀`));
+app.get('/', (req, res) => res.send('<h1>XialitySMP: WRITE OVERRIDE ACTIVE 🛡️</h1>'));
+app.listen(PORT, () => console.log(`Engine Online. TikTok brainrot deleted! 💀`));

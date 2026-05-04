@@ -1,56 +1,33 @@
-'use strict';
-
-const bedrock = require('bedrock-protocol');
 const express = require('express');
+const { Client } = require('aternos-api');
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// THE CONFIG - CORRECTED SEPARATORS 🧤
-const config = {
-  host: 'WorldWidePlusSMP.aternos.me', 
-  port: 23270,                      
-  version: '1.26.14.1', // THE SIGMA VERSION
-  password: 'chalo362'
-};
+// Keep Render from being a "looser" and shutting down
+app.get('/', (req, res) => res.send('Xiality Sigma Engine: ONLINE 🧤'));
+app.listen(3000, () => console.log('Web server is locked in! 🛡️🔥'));
 
-app.get('/', (req, res) => {
-  res.send('<h1>🤖 RENDER CLOUD: PARSE ERROR FIXED 🧤</h1>');
-});
+const aternos = new Client();
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[+] RENDER DASHBOARD LIVE ON PORT ${PORT} 🧤`);
-});
+async function keepServerAlive() {
+    try {
+        // LOCK IN YOUR ACTUAL TRUTH CREDENTIALS
+        await aternos.login('YOUR_USERNAME', 'YOUR_PASSWORD');
+        const servers = await aternos.getServers();
+        const myServer = servers[0]; // Your main Sigma server
 
-function createBot() {
-  const client = bedrock.createClient({
-    host: config.host,
-    port: config.port,
-    version: config.version,
-    offline: true,              
-    skipEncryption: true,       
-    connectTimeout: 90000 // GIVING IT TIME TO LOAD
-  });
-
-  client.on('join', () => {
-    console.log("[+] JOINED! NO MORE PARSE ERRORS! 🧤");
-    setTimeout(() => {
-      client.chat(`/login ${config.password}`);
-      
-      setInterval(() => {
-        client.write('player_auth_input', {
-          pitch: 0, yaw: 0, position: { x: 0, y: 100, z: 0 },
-          move_vector: { x: 0, z: 0 }, 
-          input_data: { jump_down: true, jumping: true },
-          input_mode: 'touch', play_mode: 'normal', tick: BigInt(0)
-        });
-      }, 5000);
-    }, 10000); 
-  });
-
-  client.on('error', (err) => {
-    console.log("[-] ERROR BLOCKED: " + err.message + " 🥀");
-    setTimeout(createBot, 15000); 
-  });
+        setInterval(async () => {
+            await myServer.fetch();
+            if (myServer.status === 'offline') {
+                console.log("STATUS: STINKY_OFFLINE... RESTARTING... 💀");
+                await myServer.start();
+            } else {
+                console.log("STATUS: SIGMA_ONLINE... VIBE_CHECK: 1,000,000/10 🧤");
+            }
+        }, 300000); // Check every 5 minutes
+    } catch (err) {
+        console.log("ENGINE_CHOPPED: Reconnecting in 1 minute... 📟");
+        setTimeout(keepServerAlive, 60000);
+    }
 }
 
-createBot();
+keepServerAlive();
